@@ -31,9 +31,10 @@ import (
 	"net"
 	"os"
 	"strings"
+	"syscall"
 )
 
-const Version = "1.1.0"
+const Version = "1.2.0"
 
 var debug = flag.Bool("debug", false, "enable debug logging")
 
@@ -126,6 +127,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	env := os.Environ()
+	args := os.Args
+	binary := args[len(args)-1]
 
+	err = syscall.Exec(binary, nil, env)
+	if err != nil {
+		if *debug {
+                        log.Println("Unable to execute binary ", binary, err)
+                }
+		os.Exit(1)
+	}
 }
-
